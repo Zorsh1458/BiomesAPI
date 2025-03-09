@@ -1,6 +1,5 @@
 package me.outspending.biomesapi.nms;
 
-import net.minecraft.core.IdMap;
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
@@ -9,27 +8,30 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.minecraft.world.level.lighting.LevelLightEngine;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
-import org.bukkit.craftbukkit.v1_19_R2.CraftChunk;
-import org.bukkit.craftbukkit.v1_19_R2.CraftServer;
-import org.bukkit.craftbukkit.v1_19_R2.entity.CraftPlayer;
+import org.bukkit.craftbukkit.CraftChunk;
+import org.bukkit.craftbukkit.CraftServer;
+import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
 /**
- * This class provides the implementation for the NMS interface for version 1.19_R2.
+ * This class provides the implementation for the NMS interface for version 1.21_R3.
  * It provides methods to interact with the game's chunks and biome registry.
  */
-public class NMS_v1_19_R2 implements NMS {
+public class NMS_v1_21_R3 implements NMS {
 
     /**
      * Retrieves the registry for a given key.
@@ -39,7 +41,7 @@ public class NMS_v1_19_R2 implements NMS {
      */
     private static <T> MappedRegistry<T> getRegistry(ResourceKey<Registry<T>> key) {
         DedicatedServer server = ((CraftServer) Bukkit.getServer()).getServer();
-        return (MappedRegistry<T>) server.registryAccess().registryOrThrow(key);
+        return (MappedRegistry<T>) server.registryAccess().lookupOrThrow(key);
     }
 
     /**
@@ -51,9 +53,8 @@ public class NMS_v1_19_R2 implements NMS {
     @Override
     public void updateChunks(@NotNull List<Chunk> chunks) {
         CompletableFuture.runAsync(() -> {
-
             for (Chunk chunk : chunks) {
-                LevelChunk levelChunk = ((CraftChunk) chunk).getHandle();
+                LevelChunk levelChunk = (LevelChunk) ((CraftChunk) chunk).getHandle(ChunkStatus.BIOMES);
                 LevelLightEngine levelLightEngine = levelChunk.getLevel().getLightEngine();
 
                 ClientboundLevelChunkWithLightPacket packet = new ClientboundLevelChunkWithLightPacket(levelChunk, levelLightEngine, null, null, true);
@@ -96,8 +97,28 @@ public class NMS_v1_19_R2 implements NMS {
     @Override
     public void unlockRegistry(@NotNull Supplier<?> supplier) {
         MappedRegistry<Biome> registry = getRegistry(Registries.BIOME);
+        boolean wasFrozen = true;
         biomeRegistryLock(false);
         supplier.get();
+
+        // Yeah, there's a lot more going on here.
+        // I 'heard' there are some new custom biomes api in paper,
+        // but I've yet to find it.
+
+        try {
+            // We're doing this whole reflection mess to properly re-freeze the registry.
+            Class<?> registryClass = registry.getClass();
+            Field field = registryClass.getDeclaredField("allTags");
+            field.setAccessible(true);
+            Class<?> tagSetClass = Class.forName("net.minecraft.core.MappedRegistry$TagSet");
+            Method unboundMethod = tagSetClass.getDeclaredMethod("unbound");
+            unboundMethod.setAccessible(true);
+            Object unboundTagSet = unboundMethod.invoke(null);
+            field.set(registry, unboundTagSet);
+        } catch (NoSuchFieldException | IllegalAccessException | ClassNotFoundException | InvocationTargetException |
+                 NoSuchMethodException e) {
+            e.printStackTrace();
+        }
         registry.freeze();
     }
 
@@ -114,7 +135,7 @@ public class NMS_v1_19_R2 implements NMS {
     public @NotNull Registry<Biome> getRegistry() {
         return ((CraftServer) Bukkit.getServer()).getServer()
                 .registryAccess()
-                .registry(Registries.BIOME)
+                .lookup(Registries.BIOME)
                 .orElseThrow(() -> new RuntimeException("Could not retrieve biome registry"));
     }
 

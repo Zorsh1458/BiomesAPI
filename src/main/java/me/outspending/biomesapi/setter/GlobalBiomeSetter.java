@@ -10,8 +10,6 @@ import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.concurrent.NotThreadSafe;
-
 public class GlobalBiomeSetter implements BiomeSetter {
 
     @SuppressWarnings("deprecation")
@@ -31,6 +29,8 @@ public class GlobalBiomeSetter implements BiomeSetter {
         Location location = block.getLocation();
         RegionAccessor accessor = getRegionAccessor(location);
 
+//        Registry<@NotNull Biome> registry =  RegistryAccess.registryAccess().getRegistry(RegistryKey.BIOME);
+//        registry.
         UNSAFE.setBiomeKey(accessor, location.getBlockX(), location.getBlockY(), location.getBlockZ(), customBiome.toNamespacedKey());
 
         if (updateBiome) {

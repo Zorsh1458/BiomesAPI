@@ -2,7 +2,6 @@ package me.outspending.biomesapi.nms;
 
 import me.outspending.biomesapi.annotations.AsOf;
 import me.outspending.biomesapi.exceptions.UnknownNMSVersionException;
-import me.outspending.biomesapi.nms.*;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 
@@ -63,6 +62,7 @@ public class NMSHandler {
             case "1.20", "1.20.1" -> NMS_VERSION = new NMS_v1_20_R1();
             case "1.20.2" -> NMS_VERSION = new NMS_v1_20_R2();
             case "1.20.3", "1.20.4" -> NMS_VERSION = new NMS_v1_20_R3();
+            case "1.21.3", "1.21.4" -> NMS_VERSION = new NMS_v1_21_R3();
             default -> throw new UnknownNMSVersionException("The version " + version + " is not supported by BiomesAPI. Make sure you are up-to-date with the latest version of BiomesAPI.");
         }
     }

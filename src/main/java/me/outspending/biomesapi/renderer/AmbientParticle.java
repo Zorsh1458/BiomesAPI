@@ -38,7 +38,7 @@ public enum AmbientParticle {
     ENCHANT(ParticleTypes.ENCHANT),
     ENCHANTED_HIT(ParticleTypes.ENCHANTED_HIT),
     END_ROD(ParticleTypes.END_ROD),
-    ENTITY_EFFECT(ParticleTypes.ENTITY_EFFECT),
+    //ENTITY_EFFECT(ParticleTypes.ENTITY_EFFECT),
     EXPLOSION(ParticleTypes.EXPLOSION),
     EXPLOSION_EMITTER(ParticleTypes.EXPLOSION_EMITTER),
     FALLING_DRIPSTONE_LAVA(ParticleTypes.FALLING_DRIPSTONE_LAVA),

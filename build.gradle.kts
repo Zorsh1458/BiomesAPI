@@ -1,18 +1,18 @@
 plugins {
-    id("com.github.johnrengelman.shadow") version "8.1.1"
-    id("io.papermc.paperweight.userdev") version "1.5.11"
-    id("me.champeau.jmh") version "0.7.2"
-    `maven-publish`
     java
+    `maven-publish`
+    id("com.gradleup.shadow") version "9.0.0-beta9"
+    id("io.papermc.paperweight.userdev") version "2.0.0-beta.14"
+    id("me.champeau.jmh") version "0.7.2"
 }
 
 allprojects {
     apply(plugin = "java")
     apply(plugin = "maven-publish")
-    apply(plugin = "com.github.johnrengelman.shadow")
+    apply(plugin = "com.gradleup.shadow")
 
-    group = "com.github.Outspending"
-    version = "0.0.1"
+    group = "me.outspending.biomesapi"
+    version = "0.0.3"
 
     tasks.withType<JavaCompile> {
         options.encoding = "UTF-8"
@@ -45,7 +45,7 @@ allprojects {
         publishing {
             publications {
                 create<MavenPublication>("maven") {
-                    groupId = "com.github.Outspending"
+                    groupId = "me.outspending.biomesapi"
                     artifactId = project.name
 
                     if (usesReobfuscatedJar()) artifact(reobfBuildFile)
@@ -89,9 +89,10 @@ allprojects {
 
 }
 
-val nmsVersions = listOf("1.19_R2", "1.19_R3", "1.20_R1", "1.20_R2", "1.20_R3")
+val nmsVersions = listOf("1.19_R2", "1.19_R3", "1.20_R1", "1.20_R2", "1.20_R3", "1.21_R3")
 dependencies {
-    paperweight.paperDevBundle("1.20-R0.1-SNAPSHOT")
+    paperweight.paperDevBundle("1.21.4-R0.1-SNAPSHOT")
+    implementation("com.google.guava:guava:11.0.2")
 
     // NMS Implementations
     implementation(project(":NMS:Wrapper"))
@@ -104,6 +105,9 @@ dependencies {
     jmh("org.openjdk.jmh:jmh-generator-annprocess:0.9")
 }
 
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(21)
+}
 
 tasks.wrapper {
     gradleVersion = "8.1.1"

@@ -3,7 +3,7 @@ package me.outspending.biomesapi.renderer;
 import net.minecraft.core.particles.*;
 
 public interface BiomeParticle {
-    SimpleParticleType AMBIENT_ENTITY_EFFECT = ParticleTypes.AMBIENT_ENTITY_EFFECT;
+    ParticleType<ColorParticleOption> AMBIENT_ENTITY_EFFECT = ParticleTypes.ENTITY_EFFECT;
     SimpleParticleType ANGRY_VILLAGER = ParticleTypes.ANGRY_VILLAGER;
     ParticleType<BlockParticleOption> BLOCK = ParticleTypes.BLOCK;
     ParticleType<BlockParticleOption> BLOCK_MARKER = ParticleTypes.BLOCK_MARKER;
@@ -21,7 +21,7 @@ public interface BiomeParticle {
     SimpleParticleType ENCHANTED_HIT = ParticleTypes.ENCHANTED_HIT;
     SimpleParticleType ENCHANT = ParticleTypes.ENCHANT;
     SimpleParticleType END_ROD = ParticleTypes.END_ROD;
-    SimpleParticleType ENTITY_EFFECT = ParticleTypes.ENTITY_EFFECT;
+    ParticleType<ColorParticleOption> ENTITY_EFFECT = ParticleTypes.ENTITY_EFFECT;
     SimpleParticleType EXPLOSION = ParticleTypes.EXPLOSION;
     SimpleParticleType EXPLOSION_EMITTER = ParticleTypes.EXPLOSION_EMITTER;
     SimpleParticleType FALLING_LAVA = ParticleTypes.FALLING_LAVA;
