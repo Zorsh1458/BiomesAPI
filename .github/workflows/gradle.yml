@@ -34,3 +34,6 @@ jobs:
 
       - name: Upload Artifact
         uses: actions/upload-artifact@4.6.2
+        with:
+          overwrite: true
+          path: build/libs/BiomesAPI.jar
